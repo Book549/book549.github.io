@@ -8,21 +8,32 @@
 </head>
 <body>
   <div class="container">
+    <!-- Header -->
     <header>
-      <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44'><rect width='44' height='44' rx='8' fill='%2360a5fa'/><text x='50%' y='58%' font-size='18' text-anchor='middle' fill='white' font-family='Arial' font-weight='700'>CV</text></svg>" alt="logo" style="width:44px;height:44px;border-radius:8px">
+      <img src="data:image/svg+xml;utf8,
+        <svg xmlns='http://www.w3.org/2000/svg' width='44' height='44'>
+          <rect width='44' height='44' rx='8' fill='%2360a5fa'/>
+          <text x='50%' y='58%' font-size='18' text-anchor='middle' fill='white' font-family='Arial' font-weight='700'>CV</text>
+        </svg>" 
+        alt="logo" style="width:44px;height:44px;border-radius:8px">
       <div>
-        <h1>Career Vision — เว็บค้นหาอาชีพในฝัน</h1>
-        <div class="small">ตอบคำถามสั้น ๆ ระบบจะช่วยแนะนำอาชีพที่เหมาะกับคุณ — เพิ่มอาชีพเองได้ และทดลองใส่ชุดอาชีพด้วยภาพของคุณ</div>
+        <h1>Career Vision — ค้นหาอาชีพในฝันของนักเรียน</h1>
+        <div class="small">
+          ตอบคำถามสนุก ๆ แล้วมาดูกันว่า... อาชีพไหนคือ “คู่แท้” ของเด็กๆ!  
+          เพิ่มอาชีพเองได้ พร้อมทดลองใส่ชุดในฝันผ่านภาพของนักเรียน
+        </div>
       </div>
     </header>
 
+    <!-- Main content grid -->
     <div class="grid">
-      <main class="card">
+      <!-- แบบประเมิน -->
+      <main class="card" >
         <section id="assessment">
-          <h2 style="margin-top:0">แบบประเมินด่วน (2 นาที)</h2>
+          <h2 style="margin-top:0">เริ่มภารกิจค้นหาอาชีพ (ใช้เวลาแค่ 2 นาที!)</h2>
           <form id="quiz">
             <div>
-              <label>1) คุณชอบทำงานแบบใด?</label>
+              <label>1) นักเรียนชอบทำงานแบบใด?</label>
               <div class="row">
                 <label><input type="checkbox" name="interest" value="tech"> เทคโนโลยี / คอมพิวเตอร์</label>
                 <label><input type="checkbox" name="interest" value="creative"> งานสร้างสรรค์ (ออกแบบ, ศิลป์)</label>
@@ -33,7 +44,7 @@
             </div>
 
             <div style="margin-top:12px">
-              <label>2) คุณคิดว่าจุดแข็งของคุณคืออะไร? (เลือกได้มากกว่า 1)</label>
+              <label>2) นักเรียนคิดว่าจุดแข็งของนักเรียนคืออะไร? (เลือกได้มากกว่า 1)</label>
               <div class="row">
                 <label><input type="checkbox" name="skill" value="logic"> การคิดเชิงตรรกะ</label>
                 <label><input type="checkbox" name="skill" value="art"> ความคิดสร้างสรรค์</label>
@@ -44,7 +55,7 @@
             </div>
 
             <div style="margin-top:12px">
-              <label>3) คุณชอบสภาพแวดล้อมการทำงานแบบใด?</label>
+              <label>3) นักเรียนชอบทำงานที่ไหน?</label>
               <div class="row">
                 <label><input type="radio" name="env" value="office" checked> ออฟฟิศ/ในร่ม</label>
                 <label><input type="radio" name="env" value="field"> ทำงานนอกสถานที่</label>
@@ -53,10 +64,10 @@
             </div>
 
             <div style="margin-top:12px">
-              <label>4) เป้าหมายหลังเรียนจบ</label>
+              <label>4) หลังเรียนจบจะทำอะไรต่อ?</label>
               <select id="goal">
                 <option value="university">เรียนต่อมหาวิทยาลัย</option>
-                <option value="vocational">เรียนสายอาชีพ / เทคนิครอง</option>
+                <option value="vocational">เรียนสายอาชีพ / สายเทคนิค</option>
                 <option value="work">ทำงานเลย</option>
                 <option value="undecided">ยังไม่ตัดสินใจ</option>
               </select>
@@ -69,457 +80,457 @@
           </form>
         </section>
 
+        <!-- ผลลัพธ์ -->
         <section style="margin-top:18px">
-          <h3>ผลลัพธ์: อาชีพที่แนะนำ</h3>
-          <div id="results" class="career-list muted">-- ยังไม่มีผลลัพธ์ --</div>
+          <h3>ผลลัพธ์: อาชีพที่ใช่สำหรับนักเรียน</h3>
+          <div id="results" class="career-list muted">-- รอให้นักเรียนเริ่มเล่นก่อนนะ --</div>
         </section>
+
+        <!-- เพิ่มอาชีพเอง -->
         <section style="margin-top:18px">
-          <h3>เพิ่มอาชีพของคุณเอง</h3>
-          <input id="newName" type="text" placeholder="ชื่ออาชีพ เช่น นักพัฒนาเว็บ">
-            <label>เลือกแท็ก:</label>
-            <div id="tagOptions" class="row"></div>
-            <div class="small">เมื่อเพิ่มแล้ว ให้แก้ไขรายละเอียดในรายการอาชีพ (Tag) เพื่อให้ระบบจับคู่ได้</div>
-            <div style="display:flex;gap:8px"></div>
-            <button id="addCareer">เพิ่ม</button>
-  
-          
-          
-          <div style="margin-top:10px">
+          <h3>สร้างอาชีพในฝันของนักเรียนเอง</h3>
+          <input id="newName" type="text" placeholder="ชื่ออาชีพ เช่น นักบินอวกาศ">
+          <div style="margin-top:10px"></div>
+          <label id="sectionTag" style="display:none">นักเรียนคิดว่าอาชีพที่นักเรียนเลือกเป็นอย่างไร:</label>
+          <div  id="tagOptions" class="row" style="margin-bottom:18px;display:none;max-width:400px"></div>
+          <button id="addCareer">เพิ่มอาชีพ</button>
+
+          <div style="margin-top:12px">
             <label>รายการอาชีพทั้งหมด</label>
             <div id="allCareers" class="career-list"></div>
           </div>
         </section>
       </main>
 
-    <aside class="card">
-      <h3 style="margin-top:0">Photo Studio</h3>
-      <div class="photo-stage" id="photoStage">
-        <canvas id="canvas" width="360" height="320"></canvas>
-      </div>
-      <div style="margin-top:10px">
-        <input type="file" id="photoInput" accept="image/*">
-        
-        <!-- ปุ่มเปิดกล้อง + ปุ่มถ่ายรูป -->
-        <div style="margin-top:10px; display:flex; gap:8px;">
-          <button id="openCamera">เปิดกล้อง</button>
-          <button id="takePhoto" style="display:none;" disabled>ถ่ายรูป</button>
-          <button id="closeCamera" style="display:none; background:#da6767;" disabled>ปิดกล้อง</button>
+      <!-- Photo Studio -->
+      <aside class="card">
+        <h3 style="margin-top:0">Photo Studio — ใส่ชุดในฝัน</h3>
+        <div class="photo-stage" id="photoStage">
+          <canvas id="canvas" width="360" height="270"></canvas>
+        </div>
+        <div style="margin-top:10px">
+          <input type="file" id="photoInput" accept="image/*">
+          
+          <div style="margin-top:10px; display:flex; gap:8px;">
+            <button id="openCamera">เปิดกล้อง</button>
+            <button id="takePhoto" style="display:none;" disabled>ถ่ายรูป</button>
+            <button id="closeCamera" style="display:none; background:#da6767;" disabled>ปิดกล้อง</button>
+          </div>
+
+          <video id="video" width="360" height="auto" autoplay playsinline style="display:none; margin-top:10px; border:1px solid #ccc; border-radius:8px;"></video>
+
+          <div style="margin-top:8px" class="overlay-list"></div>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <button id="download">ดาวน์โหลดรูป</button>
+            <button id="clearPhoto" style="background:#da6767">ล้าง</button>
+          </div>
         </div>
 
-        <!-- แสดงวิดีโอจากกล้อง -->
-        <video id="video" width="360" height="320" autoplay playsinline style="display:none; margin-top:10px; border:1px solid #ccc; border-radius:8px;"></video>
+        <div class="footer">ภาพจำลองนี้สร้างเพื่อความสนุกและแรงบันดาลใจเท่านั้น — ไม่ใช่การแต่งกายจริง</div>
+      </aside>
 
-        <div style="margin-top:8px" class="overlay-list"></div>
-        <div style="margin-top:8px;display:flex;gap:8px">
-          <button id="download">ดาวน์โหลดรูป</button>
-          <button id="clearPhoto" style="background:#da6767">ล้าง</button>
-        </div>
+      <!-- คำแนะนำ -->
+      <div style="max-width:1000px;margin-top:18px;grid-column: 1 / -1;" class="card">
+        <h3 style="margin-top:0">วิธีสนุกกับเว็บนี้</h3>
+        <ol>
+          <li>ตอบคำถามในแบบประเมิน แล้วกด "ค้นหาอาชีพในฝันของฉัน"</li>
+          <li>ดูอาชีพที่ระบบแนะนำ ถ้าไม่ถูกใจสามารถเพิ่มเองได้</li>
+          <li>ไปที่ Photo Studio เพื่ออัปโหลดรูปของนักเรียน และทดลองใส่ชุดอาชีพเพื่อเพิ่มจินตนาการ</li>
+          <li>บันทึกผลหรือดาวน์โหลดภาพ </li>
+        </ol>
       </div>
+    </div> <!-- ปิด grid -->
+  </div> <!-- ปิด container -->
+  <!-- Footer -->
+<footer style="text-align:center; padding: 1rem; font-size: 0.9rem; color: #777;">
+    Made by Wattanachai Maijampa - 680210145
+</footer>
 
-      <div class="footer">รูปจำลองจะใช้เป็นแรงบันดาลใจเท่านั้น — ไม่ใช่การแต่งกายจริง</div>
-    </aside>
-    <div style="max-width:1000px;margin-top:18px" class="card">
-      <h3 style="margin-top:0">คำแนะนำการใช้งาน</h3>
-      <ol>
-        <li>ตอบแบบประเมิน และกด "ค้นหาอาชีพที่เหมาะกับฉัน"</li>
-        <li>ดูผลลัพธ์ที่ระบบแนะนำ หากไม่พอใจสามารถเพิ่มอาชีพใหม่แล้วใส่แท็ก/รายละเอียดได้</li>
-        <li>ไปที่ Photo Studio เพื่ออัปโหลดรูปของคุณ และทดลองใส่ชุดอาชีพเพื่อเพิ่มจินตนาการ</li>
-        <li>บันทึกผลหรือดาวน์โหลดภาพเพื่อเก็บเป็นไฟล์ Portfolio</li>
-      </ol>
-    </div>
+<script>
+/* ===========================
+   1. ข้อมูลแท็กและฟังก์ชันแปลภาษา
+=========================== */
+const tagMap = {
+  tech: 'เทคโนโลยี / คอมพิวเตอร์',
+  creative: 'งานสร้างสรรค์ (ออกแบบ, ศิลป์)',
+  people: 'ทำงานกับคน (บริการ)',
+  hands: 'งานช่าง/ปฏิบัติการ (ช่าง, เกษตร)',
+  business: 'ธุรกิจ/การจัดการ',
+  logic: 'การคิดเชิงตรรกะ',
+  art: 'ความคิดสร้างสรรค์',
+  social: 'ทักษะสื่อสาร',
+  manual: 'ทำงานด้วยมือ/ลงมือทำ',
+  lead: 'การบริหารจัดการ',
+  office: 'ออฟฟิศ/ในร่ม',
+  field: 'ทำงานนอกสถานที่',
+  home: 'ทำงานจากที่บ้าน',
+  university: 'เรียนต่อมหาวิทยาลัย',
+  vocational: 'เรียนสายอาชีพ / เทคนิครอง',
+  work: 'ทำงานเลย',
+  undecided: 'ยังไม่ตัดสินใจ'
+};
+function translateTags(tagsEng) {
+  return tagsEng.map(t => tagMap[t] || t);
+}
 
-  </div>
-  <script>
-    const newNameInput = document.getElementById('newName');
-    const tagOptions = document.getElementById('tagOptions');
+/* ===========================
+   2. ข้อมูลอาชีพเริ่มต้น
+=========================== */
+const DEFAULT_CAREERS = [
+  { id:'soldier', name:'ทหาร',  tags:['people','social','logic','manual','field','work'],  desc:'ทำงานรักษาประเทศ' },
+  { id:'dev', name:'นักพัฒนาซอฟต์แวร์',  tags:['tech','logic','office','home','university','work'],  desc:'ทำงานเกี่ยวกับการพัฒนาโปรแกรมและระบบ' },
+  { id:'designer', name:'กราฟิก/นักออกแบบ',  tags:['creative','art','office','home','vocational','work'],  desc:'ออกแบบงานกราฟิก UX/UI และสื่อโฆษณา' },
+  { id:'nurse', name:'พยาบาล/บุคลากรทางการแพทย์',  tags:['people','social','office','field','university','work'],  desc:'ดูแลผู้ป่วยและให้บริการสุขภาพ' },
+  { id:'doctor', name:'แพทย์',  tags:['people','logic','office','field','university'],  desc:'วินิจฉัยและรักษาผู้ป่วย' },
+  { id:'chef', name:'เชฟ/กุ๊ก',  tags:['creative','manual','office','vocational','work'],  desc:'ทำอาหารและสร้างสรรค์เมนู' },
+  { id:'mechanic', name:'ช่างซ่อมบำรุง',  tags:['hands','manual','field','vocational','work'],  desc:'ซ่อมและดูแลเครื่องจักรหรืออุปกรณ์' },
+  { id:'engineer', name:'วิศวกร',  tags:['tech','logic','office','field','university'],  desc:'ออกแบบและดูแลระบบวิศวกรรม' },
+  { id:'scientist', name:'นักวิทยาศาสตร์',  tags:['logic','tech','office','university','work'],  desc:'วิจัยและทดลองเพื่อสร้างองค์ความรู้ใหม่' },
+  { id:'police', name:'เจ้าหน้าที่ตำรวจ',  tags:['people','lead','field','vocational','work'],  desc:'ดูแลความสงบเรียบร้อยและบังคับใช้กฎหมาย' },
+  { id:'firefighter', name:'นักดับเพลิง',  tags:['hands','manual','field','vocational','work'],  desc:'รับมือกับเพลิงไหม้และเหตุฉุกเฉิน' },
+  { id:'lawyer', name:'ทนายความ',  tags:['logic','lead','office','university','work'],  desc:'ว่าความและให้คำปรึกษาทางกฎหมาย' },
+  { id:'teacher', name:'ครู/อาจารย์',  tags:['people','social','office','university'],  desc:'สอนและพัฒนาทักษะผู้เรียน' },
+  { id:'sales', name:'พนักงานขาย',  tags:['business','social','field','work'],  desc:'นำเสนอสินค้าและปิดการขายกับลูกค้า' },
+  { id:'photographer', name:'ช่างภาพ',  tags:['creative','hands','field','vocational','work'],  desc:'ถ่ายภาพและปรับแต่งภาพเพื่อการนำเสนอ' },
+  { id:'tourguide', name:'มัคคุเทศก์',  tags:['people','social','field','vocational','work'],  desc:'นำเที่ยวและบรรยายข้อมูลแก่นักท่องเที่ยว' },
+  { id:'farmer', name:'เกษตรกร/ช่างเทคนิค',  tags:['hands','manual','field','vocational','work'],  desc:'งานเกษตรกรรมและช่างปฏิบัติการ' },
+  { id:'manager', name:'ผู้จัดการ/ธุรกิจ',  tags:['business','lead','office','work'],  desc:'บริหารจัดการองค์กรและทีมงาน' },
+  { id:'contentcreator', name:'ครีเอเตอร์คอนเทนต์',  tags:['creative','art','office','home','work'],  desc:'สร้างเนื้อหาภาพ วิดีโอ และบทความเพื่อสื่อสารกับผู้ชม' },
+  { id:'translator', name:'นักแปลภาษา',  tags:['logic','social','office','home','work'],  desc:'แปลเอกสารและบทสนทนาจากภาษาหนึ่งสู่อีกภาษา' },
+  { id:'webmaster', name:'ผู้ดูแลเว็บไซต์',  tags:['tech','logic','office','home','work'],  desc:'ดูแลการทำงานของเว็บไซต์และปรับปรุงประสิทธิภาพ' }
+];
+
+/* ===========================
+   3. ข้อมูล Overlay
+=========================== */
+const DEFAULT_OUTFITS = [
+  { id: 'dev', label: 'นักพัฒนาซอฟต์แวร์' },
+  { id: 'designer', label: 'กราฟิก/นักออกแบบ' },
+  { id: 'nurse', label: 'พยาบาล/บุคลากรทางการแพทย์' },
+  { id: 'doctor', label: 'แพทย์' },
+  { id: 'chef', label: 'เชฟ/กุ๊ก' },
+  { id: 'mechanic', label: 'ช่างซ่อมบำรุง' },
+  { id: 'engineer', label: 'วิศวกร' },
+  { id: 'scientist', label: 'นักวิทยาศาสตร์' },
+  { id: 'police', label: 'เจ้าหน้าที่ตำรวจ' },
+  { id: 'firefighter', label: 'นักดับเพลิง' },
+  { id: 'lawyer', label: 'ทนายความ' },
+  { id: 'teacher', label: 'ครู/อาจารย์' },
+  { id: 'sales', label: 'พนักงานขาย' },
+  { id: 'photographer', label: 'ช่างภาพ' },
+  { id: 'tourguide', label: 'มัคคุเทศก์' },
+  { id: 'farmer', label: 'เกษตรกร/ช่างเทคนิค' },
+  { id: 'manager', label: 'ผู้จัดการ/ธุรกิจ' },
+  { id: 'contentcreator', label: 'ครีเอเตอร์คอนเทนต์' },
+  { id: 'translator', label: 'นักแปลภาษา' },
+  { id: 'webmaster', label: 'ผู้ดูแลเว็บไซต์' },
+  { id: 'none', label: 'ไม่มี' }
+];
+
+/* ===========================
+   4. การจัดการข้อมูลใน LocalStorage
+=========================== */
+const storeKey = 'cv_careers_v1';
+function loadCareers(){
+  try {
+    const raw = localStorage.getItem(storeKey);
+    return raw ? JSON.parse(raw) : DEFAULT_CAREERS.slice();
+  } catch {
+    return DEFAULT_CAREERS.slice();
+  }
+}
+function saveCareers(list){
+  localStorage.setItem(storeKey, JSON.stringify(list));
+}
+let careers = loadCareers();
+
+/* ===========================
+   5. แสดงรายการอาชีพทั้งหมด
+=========================== */
+function escapeHtml(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function renderAllCareers() {
+  const el = document.querySelector('#allCareers');
+  el.innerHTML = '';
+  careers.forEach(c => {
+    const tagsThai = translateTags(c.tags);
+    const div = document.createElement('div');
+    div.className = 'career-item';
+    div.innerHTML = `<div><strong>${escapeHtml(c.name)}</strong><div class='small muted'>${escapeHtml(c.desc || '')}</div></div><div class='badge'>${tagsThai.join(', ')}</div>`;
+    el.appendChild(div);
+  });
+}
 
 
-    newNameInput.addEventListener('focus', () => {
-      tagOptions.style.display = 'flex'; // หรือ 'block' ตาม layout คุณ
-    });
+/* ===========================
+   6. อัลกอริทึมจับคู่
+=========================== */
+function runMatch(){
+  const interests = Array.from(document.querySelectorAll('input[name=interest]:checked')).map(i=>i.value);
+  const skills = Array.from(document.querySelectorAll('input[name=skill]:checked')).map(i=>i.value);
+  const env = document.querySelector('input[name=env]:checked').value;
+  const goal = document.querySelector('#goal').value;
 
-    newNameInput.addEventListener('blur', () => {
-      // ถ้าต้องการซ่อนตอนออกจากช่อง input และยังไม่ได้พิมพ์อะไร
-      if (newNameInput.value.trim() === '') {
-        tagOptions.style.display = 'none';
-      }
-    });
+  const scoreFor = c=>{
+    let score=0;
+    interests.forEach(i=>{ if(c.tags.includes(i)) score+=2 });
+    skills.forEach(s=>{ if(c.tags.includes(s)) score+=2 });
+    if(c.tags.includes(env)) score+=1;
+    if(c.tags.includes(goal)) score+=2;
+    return score;
+  }
 
-    const tagMap = {
-      tech: 'เทคโนโลยี / คอมพิวเตอร์',
-      creative: 'งานสร้างสรรค์ (ออกแบบ, ศิลป์)',
-      people: 'ทำงานกับคน (บริการ)',
-      hands: 'งานช่าง/ปฏิบัติการ (ช่าง, เกษตร)',
-      business: 'ธุรกิจ/การจัดการ',
-      logic: 'การคิดเชิงตรรกะ',
-      art: 'ความคิดสร้างสรรค์',
-      social: 'ทักษะสื่อสาร',
-      manual: 'ทำงานด้วยมือ/ลงมือทำ',
-      lead: 'การบริหารจัดการ',
-      office: 'ออฟฟิศ/ในร่ม',
-      field: 'ทำงานนอกสถานที่',
-      home: 'ทำงานจากที่บ้าน',
-      university: 'เรียนต่อมหาวิทยาลัย',
-      vocational: 'เรียนสายอาชีพ / เทคนิครอง',
-      work: 'ทำงานเลย',
-      undecided: 'ยังไม่ตัดสินใจ'
-    };
+  const results = careers
+    .map(c=>({career:c,score:scoreFor(c)}))
+    .sort((a,b)=>b.score-a.score);
 
-    function translateTags(tagsEng) {
-    return tagsEng.map(t => tagMap[t] || t);
+  const container = document.querySelector('#results');
+  const overlayContainer = document.querySelector('.overlay-list');
+  container.innerHTML = '';
+  overlayContainer.innerHTML = '';
+
+  if(results.every(r=>r.score===0)){
+    container.innerHTML = '<div class="muted">ไม่พบอาชีพที่ตรง ลองเปลี่ยนคำตอบหรือเพิ่มอาชีพของนักเรียน</div>';
+    return;
+  }
+
+  results.slice(0, 6).forEach(r => {
+    const d = document.createElement('div');
+    d.className = 'career-item';
+    d.innerHTML = `
+      <div>
+        <strong>${escapeHtml(r.career.name)}</strong>
+        <div class='small muted'>${escapeHtml(r.career.desc || '')}</div>
+      </div>
+      <div><span class='badge'>คะแนน ${r.score}</span></div>
+    `;
+    container.appendChild(d);
+
+    const outfit = DEFAULT_OUTFITS.find(o => o.id === r.career.id);
+    if (outfit) {
+      const btn = document.createElement('button');
+      btn.className = 'overlay-btn';
+      btn.textContent = outfit.label;
+      btn.dataset.overlay = outfit.id;
+      btn.onclick = () => { activeOverlay = btn.dataset.overlay; drawCanvas(); };
+      overlayContainer.appendChild(btn);
     }
+  });
+}
 
-    const tagList = ["tech","creative","social","hands","office"];
-    const tagsByCategory = {
-      ความสนใจ: ['tech', 'creative', 'social', 'hands', 'business'],
-      ทักษะ: ['logic', 'art', 'social', 'manual', 'lead'],
-      สิ่งแวดล้อม: ['office', 'field', 'home']
-    };
-    tagOptions.innerHTML = ''; // เคลียร์ก่อน
+/* ===========================
+   7. การเพิ่มอาชีพใหม่
+=========================== */
+// เปิดปิดเมนู
+const newNameInput = document.getElementById('newName');
+const tagOptions = document.getElementById('tagOptions');
+const sectionTag = document.getElementById('sectionTag')
 
-    // ฟังก์ชันช่วยสร้าง checkbox + label
-    function createCheckbox(tag, name){
-      const lbl = document.createElement("label");
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.value = tag;
-      checkbox.name = name;
-      lbl.appendChild(checkbox);
-      lbl.appendChild(document.createTextNode(" " + (tagMap[tag] || tag)));
-      return lbl;
-    }
+newNameInput.addEventListener('focus', () => {
+  tagOptions.style.display = 'flex'; // หรือ 'block' ตาม layout นักเรียน
+  sectionTag.style.display = 'flex';
+});
 
-    // สร้าง UI แบ่งตามหมวดหมู่
-    for(const category in tagsByCategory){
-      // หัวข้อหมวดหมู่
-      const heading = document.createElement('div');
-      heading.style.fontWeight = 'bold';
-      heading.style.marginTop = '12px';
-      heading.textContent = category.charAt(0).toUpperCase() + category.slice(1);
-      tagOptions.appendChild(heading);
+newNameInput.addEventListener('blur', () => {
+  // ถ้าต้องการซ่อนตอนออกจากช่อง input และยังไม่ได้พิมพ์อะไร
+  if (newNameInput.value.trim() === '') {
+    tagOptions.style.display = 'none';
+    sectionTag.style.display = 'none';
+  }
+});
 
-      // container สำหรับ checkbox ของแต่ละหมวด
-      const container = document.createElement('div');
-      container.className = 'row';
+//const tagList = ["tech","creative","social","hands","office"];
+const tagsByCategory = {
+  ความสนใจ: ['tech', 'creative', 'people', 'hands', 'business'],
+  ทักษะ: ['logic', 'art', 'social', 'manual', 'lead'],
+  สิ่งแวดล้อม: ['office', 'field', 'home'],
+  เป้าหมายหลังเรียนจบ: ['university', 'vocational', 'work','undecided']
 
-      tagsByCategory[category].forEach(tag => {
-        container.appendChild(createCheckbox(tag, category));
-      });
+};
+tagOptions.innerHTML = ''; // เคลียร์ก่อน
 
-      tagOptions.appendChild(container);
-    }
+// ฟังก์ชันช่วยสร้าง checkbox + label
+function createCheckbox(tag, name){
+  const lbl = document.createElement("label");
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.value = tag;
+  checkbox.name = name;
+  lbl.appendChild(checkbox);
+  lbl.appendChild(document.createTextNode(" " + (tagMap[tag] || tag)));
+  return lbl;
+}
+// สร้าง UI แบ่งตามหมวดหมู่
+for(const category in tagsByCategory){
+  // หัวข้อหมวดหมู่
+  const heading = document.createElement('div');
+  heading.style.fontWeight = 'bold';
+  heading.style.marginTop = '12px';
+  heading.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+  tagOptions.appendChild(heading);
+
+  // container สำหรับ checkbox ของแต่ละหมวด
+  const container = document.createElement('div');
+  container.className = 'row';
+
+  tagsByCategory[category].forEach(tag => {
+    container.appendChild(createCheckbox(tag, category));
+  });
+
+  tagOptions.appendChild(container);
+}
         
+//เพิ่มอาชีพ
+document.querySelector('#addCareer').addEventListener('click', () => {
+  const name = document.querySelector('#newName').value.trim();
+  if (!name) return alert('กรุณากรอกชื่ออาชีพ');
 
-        // --- Data model (initial sample data) ---
-        const DEFAULT_CAREERS = [
-          { id:'soldier', name:'ทหาร',
-            tags:['people','social','logic','manual','field','work'],
-            desc:'ทำงานรักษาประเทศ' },
-          { id:'dev', name:'นักพัฒนาซอฟต์แวร์',
-            tags:['tech','logic','office','home','university','work'],
-            desc:'ทำงานเกี่ยวกับการพัฒนาโปรแกรมและระบบ' },
+  const tags = [...document.querySelectorAll("#tagOptions input:checked")].map(i => i.value);
+  const id = name.toLowerCase().replace(/[^a-z0-9ก-๙]+/g, '-') + '-' + Date.now();
+  careers.unshift({ id, name, tags, desc: '' });
+  saveCareers(careers);
+  renderAllCareers();
+  document.querySelector('#newName').value = '';
+  document.querySelectorAll("#tagOptions input").forEach(i => i.checked = false);
+  alert('เพิ่มอาชีพแล้ว — ไปแก้รายละเอียด (tag/desc) ได้ใน devtools/localStorage หรือขอให้ฉันเพิ่มฟอร์มแก้ไขให้)');
+});
 
-          { id:'designer', name:'กราฟิก/นักออกแบบ',
-            tags:['creative','art','office','home','vocational','work'],
-            desc:'ออกแบบงานกราฟิก UX/UI และสื่อโฆษณา' },
+/* ===========================
+   8. รีเซ็ต
+=========================== */
+document.querySelector('#run').addEventListener('click', runMatch);
+document.querySelector('#reset').addEventListener('click', () => location.reload());
 
-          { id:'nurse', name:'พยาบาล/บุคลากรทางการแพทย์',
-            tags:['people','social','office','field','university','work'],
-            desc:'ดูแลผู้ป่วยและให้บริการสุขภาพ' },
+/* ===========================
+   9.1 กล้อง
+=========================== */
+//---- cam ---
+const video = document.getElementById('video');
+const openCameraBtn = document.getElementById('openCamera');
+const takePhotoBtn = document.getElementById('takePhoto');
+const closeCameraBtn = document.getElementById('closeCamera');
+let stream = null;
 
-          { id:'doctor', name:'แพทย์',
-            tags:['people','logic','office','field','university'],
-            desc:'วินิจฉัยและรักษาผู้ป่วย' },
+openCameraBtn.addEventListener('click', async () => {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+    video.srcObject = stream;
+    video.style.display = 'block';
+    openCameraBtn.disabled = true;
+    takePhotoBtn.disabled = false;
+    closeCameraBtn.disabled = false;
+    openCameraBtn.style.display = 'none';
+    closeCameraBtn.style.display = 'inline-block';
+    takePhotoBtn.style.display = 'inline-block';
+  } catch (err) {
+    alert('ไม่สามารถเข้าถึงกล้องได้: ' + err.message);
+  }
+});
 
-          { id:'chef', name:'เชฟ/กุ๊ก',
-            tags:['creative','manual','office','vocational','work'],
-            desc:'ทำอาหารและสร้างสรรค์เมนู' },
+takePhotoBtn.addEventListener('click', () => {
+  if (!stream) return;
+  const tempCanvas = document.createElement('canvas');
+  tempCanvas.width = video.videoWidth;
+  tempCanvas.height = video.videoHeight;
+  const tempCtx = tempCanvas.getContext('2d');
+  tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+  
+  // สร้าง Image object จาก canvas ชั่วคราว
+  const img = new Image();
+  img.onload = () => {
+    baseImg = img;  // update baseImg ให้เป็นภาพที่ถ่ายจากกล้อง
+    drawCanvas();   // วาดใหม่พร้อม overlay
+  };
+  img.src = tempCanvas.toDataURL();
+});
 
-          { id:'mechanic', name:'ช่างซ่อมบำรุง',
-            tags:['hands','manual','field','vocational','work'],
-            desc:'ซ่อมและดูแลเครื่องจักรหรืออุปกรณ์' },
+closeCameraBtn.addEventListener('click', () => {
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+    stream = null;
+    video.pause();
+    video.srcObject = null;
+  }
+  video.style.display = 'none';
+  openCameraBtn.disabled = false;
+  takePhotoBtn.disabled = true;
+  closeCameraBtn.disabled = true;
+  closeCameraBtn.style.display = 'none';
+  openCameraBtn.style.display = 'inline-block';
+  takePhotoBtn.style.display = 'none';
+});
 
-          { id:'engineer', name:'วิศวกร',
-            tags:['tech','logic','office','field','university'],
-            desc:'ออกแบบและดูแลระบบวิศวกรรม' },
+/* ===========================
+   9.2 Photo Studio
+=========================== */
+//Debug mode
+const overlayListDiv = document.querySelector('.overlay-list');
+overlayListDiv.innerHTML = ''; // ล้างของเดิมก่อน
 
-          { id:'scientist', name:'นักวิทยาศาสตร์',
-            tags:['logic','tech','office','university','work'],
-            desc:'วิจัยและทดลองเพื่อสร้างองค์ความรู้ใหม่' },
+DEFAULT_OUTFITS.forEach(o => {
+  const btn = document.createElement('button');
+  btn.className = 'overlay-btn';
+  btn.dataset.overlay = o.id;
+  btn.textContent = o.label;
+  overlayListDiv.appendChild(btn);
+});
 
-          { id:'police', name:'เจ้าหน้าที่ตำรวจ',
-            tags:['people','lead','field','vocational','work'],
-            desc:'ดูแลความสงบเรียบร้อยและบังคับใช้กฎหมาย' },
+document.querySelector('.overlay-list').addEventListener('click', e => {
+  if(e.target.classList.contains('overlay-btn')) {
+    activeOverlay = e.target.dataset.overlay;
+    drawCanvas();
+  }
+});
+//main
+const canvas = document.querySelector('#canvas');
+const ctx = canvas.getContext('2d');
+let baseImg = null;
+let activeOverlay = 'none';
 
-          { id:'firefighter', name:'นักดับเพลิง',
-            tags:['hands','manual','field','vocational','work'],
-            desc:'รับมือกับเพลิงไหม้และเหตุฉุกเฉิน' },
+function drawCanvas(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(baseImg){
+    const ratio = Math.min(canvas.width/baseImg.width, canvas.height/baseImg.height);
+    const w = baseImg.width*ratio, h = baseImg.height*ratio;
+    const x=(canvas.width-w)/2, y=(canvas.height-h)/2;
+    ctx.drawImage(baseImg,x,y,w,h);
+  }
+  drawOverlay();
+}
+function drawOverlay(){
+  if(activeOverlay==='none') return;
+  const overlayImg = new Image();
+  overlayImg.crossOrigin = "anonymous";
+  overlayImg.src = `img/${activeOverlay}.png`;
+  overlayImg.onload = () => ctx.drawImage(overlayImg,0,0,canvas.width,canvas.height);
+}
+document.querySelector('#photoInput').addEventListener('change',ev=>{
+  const f = ev.target.files[0]; if(!f) return;
+  const url = URL.createObjectURL(f);
+  const img = new Image();
+  img.onload=()=>{ baseImg=img; drawCanvas(); URL.revokeObjectURL(url); };
+  img.src=url;
+});
+document.querySelector('#clearPhoto').addEventListener('click',()=>{
+  baseImg=null; activeOverlay='none';
+  document.querySelector('#photoInput').value='';
+  drawCanvas();
+});
+document.querySelector('#download').addEventListener('click',()=>{
+  const data = canvas.toDataURL('image/png');
+  const a=document.createElement('a');
+  a.href=data; a.download='career-vision.png'; a.click();
+});
 
-          { id:'lawyer', name:'ทนายความ',
-            tags:['logic','lead','office','university','work'],
-            desc:'ว่าความและให้คำปรึกษาทางกฎหมาย' },
-
-          { id:'teacher', name:'ครู/อาจารย์',
-            tags:['people','social','office','university'],
-            desc:'สอนและพัฒนาทักษะผู้เรียน' },
-
-          { id:'sales', name:'พนักงานขาย',
-            tags:['business','social','field','work'],
-            desc:'นำเสนอสินค้าและปิดการขายกับลูกค้า' },
-
-          { id:'photographer', name:'ช่างภาพ',
-            tags:['creative','hands','field','vocational','work'],
-            desc:'ถ่ายภาพและปรับแต่งภาพเพื่อการนำเสนอ' },
-
-          { id:'tourguide', name:'มัคคุเทศก์',
-            tags:['people','social','field','vocational','work'],
-            desc:'นำเที่ยวและบรรยายข้อมูลแก่นักท่องเที่ยว' },
-
-          { id:'farmer', name:'เกษตรกร/ช่างเทคนิค',
-            tags:['hands','manual','field','vocational','work'],
-            desc:'งานเกษตรกรรมและช่างปฏิบัติการ' },
-
-          { id:'manager', name:'ผู้จัดการ/ธุรกิจ',
-            tags:['business','lead','office','work'],
-            desc:'บริหารจัดการองค์กรและทีมงาน' },
-
-          { id:'contentcreator', name:'ครีเอเตอร์คอนเทนต์',
-            tags:['creative','art','office','home','work'],
-            desc:'สร้างเนื้อหาภาพ วิดีโอ และบทความเพื่อสื่อสารกับผู้ชม' },
-
-          { id:'translator', name:'นักแปลภาษา',
-            tags:['logic','social','office','home','work'],
-            desc:'แปลเอกสารและบทสนทนาจากภาษาหนึ่งสู่อีกภาษา' },
-
-          { id:'webmaster', name:'ผู้ดูแลเว็บไซต์',
-            tags:['tech','logic','office','home','work'],
-            desc:'ดูแลการทำงานของเว็บไซต์และปรับปรุงประสิทธิภาพ' }
-        ];
-
-        // --- Utilities ---
-        const $ = sel=>document.querySelector(sel);
-        const $$ = sel=>Array.from(document.querySelectorAll(sel));
-
-        // --- State ---
-        const storeKey = 'cv_careers_v1';
-        function loadCareers(){
-          try{const raw=localStorage.getItem(storeKey);return raw?JSON.parse(raw):DEFAULT_CAREERS.slice();}catch(e){return DEFAULT_CAREERS.slice();}
-        }
-        function saveCareers(list){localStorage.setItem(storeKey,JSON.stringify(list));}
-        let careers = loadCareers();
-
-        // --- Render careers list ---
-      function renderAllCareers() {
-        const el = $('#allCareers');
-        el.innerHTML = '';
-        careers.forEach(c => {
-          const tagsThai = translateTags(c.tags);
-          const div = document.createElement('div');
-          div.className = 'career-item';
-          div.innerHTML = `<div><strong>${escapeHtml(c.name)}</strong><div class='small muted'>${escapeHtml(c.desc || '')}</div></div><div class='badge'>${tagsThai.join(', ')}</div>`;
-          el.appendChild(div);
-        });
-      }
-
-        function escapeHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
-        // --- Matching algorithm ---
-        function runMatch(){
-          const interests = Array.from(document.querySelectorAll('input[name=interest]:checked')).map(i=>i.value);
-          const skills = Array.from(document.querySelectorAll('input[name=skill]:checked')).map(i=>i.value);
-          const env = document.querySelector('input[name=env]:checked').value;
-          const goal = $('#goal').value;
-
-          const scoreFor = c=>{
-            let score=0;
-            // +2 for each tag match in interests/skills
-            interests.forEach(i=>{ if(c.tags.includes(i)) score+=2});
-            skills.forEach(s=>{ if(c.tags.includes(s)) score+=2});
-            if(c.tags.includes(env)) score+=1;
-            if (c.tags.includes(goal)) score += 2;
-            // goal heuristic: university favors office/tech/creative
-            if(goal==='university' && (c.tags.includes('tech')||c.tags.includes('creative')||c.tags.includes('office'))) score+=1;
-            if(goal==='work' && (c.tags.includes('manual')||c.tags.includes('hands')||c.tags.includes('field'))) score+=1;
-            return score;
-          }
-
-          const results = careers.map(c=>({career:c,score:scoreFor(c)})).sort((a,b)=>b.score-a.score);
-          const container = $('#results');
-          if(results.every(r=>r.score===0)){ container.innerHTML = '<div class="muted">ระบบยังไม่พบอาชีพที่สอดคล้อง ลองเปลี่ยนคำตอบหรือเพิ่มอาชีพของคุณ</div>'; return; }
-          container.innerHTML='';
-          results.slice(0,6).forEach(r=>{
-            const d = document.createElement('div');d.className='career-item';
-            d.innerHTML = `<div><strong>${escapeHtml(r.career.name)}</strong><div class='small muted'>${escapeHtml(r.career.desc||'')}</div></div><div><span class='badge'>คะแนน ${r.score}</span></div>`;
-            container.appendChild(d);
-          });
-        }
-
-        // --- Add career UI ---
-        $('#addCareer').addEventListener('click', () => {
-          const name = $('#newName').value.trim();
-          if (!name) {
-            alert('กรุณากรอกชื่ออาชีพ');
-            return;
-          }
-          
-          // ดึง tags ที่เลือกใน tagOptions
-          const tags = [...tagOptions.querySelectorAll("input:checked")].map(i => i.value);
-
-          const id = name.toLowerCase().replace(/[^a-z0-9ก-๙]+/g, '-') + '-' + Date.now();
-          const newC = { id, name, tags, desc: '' };
-          
-          careers.unshift(newC);       // เพิ่มอาชีพใหม่ด้านหน้า
-          saveCareers(careers);        // บันทึก
-          renderAllCareers();          // แสดงผลใหม่
-
-          $('#newName').value = '';    // ล้าง input ชื่อ
-          tagOptions.querySelectorAll("input").forEach(i => i.checked = false);  // เคลียร์ checkbox แท็ก
-
-          alert('เพิ่มอาชีพแล้ว — ไปแก้รายละเอียด (tag/desc) ได้ใน devtools/localStorage หรือขอให้ฉันเพิ่มฟอร์มแก้ไขให้)');
-        });
+/* ===========================
+   10. เริ่มต้น
+=========================== */
+renderAllCareers();
+drawCanvas();
+</script>
 
 
-        $('#run').addEventListener('click',runMatch);
-        $('#reset').addEventListener('click', () => {
-          location.reload();
-        });
 
-        // initial render
-        renderAllCareers();
-
-        //---- cam ---
-        const video = document.getElementById('video');
-        const openCameraBtn = document.getElementById('openCamera');
-        const takePhotoBtn = document.getElementById('takePhoto');
-        const closeCameraBtn = document.getElementById('closeCamera');
-        let stream = null;
-
-        openCameraBtn.addEventListener('click', async () => {
-          try {
-            stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-            video.srcObject = stream;
-            video.style.display = 'block';
-            openCameraBtn.disabled = true;
-            takePhotoBtn.disabled = false;
-            closeCameraBtn.disabled = false;
-            openCameraBtn.style.display = 'none';
-            closeCameraBtn.style.display = 'inline-block';
-            takePhotoBtn.style.display = 'inline-block';
-          } catch (err) {
-            alert('ไม่สามารถเข้าถึงกล้องได้: ' + err.message);
-          }
-        });
-
-        takePhotoBtn.addEventListener('click', () => {
-          if (!stream) return;
-          const tempCanvas = document.createElement('canvas');
-          tempCanvas.width = video.videoWidth;
-          tempCanvas.height = video.videoHeight;
-          const tempCtx = tempCanvas.getContext('2d');
-          tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
-          
-          // สร้าง Image object จาก canvas ชั่วคราว
-          const img = new Image();
-          img.onload = () => {
-            baseImg = img;  // update baseImg ให้เป็นภาพที่ถ่ายจากกล้อง
-            drawCanvas();   // วาดใหม่พร้อม overlay
-          };
-          img.src = tempCanvas.toDataURL();
-        });
-
-        closeCameraBtn.addEventListener('click', () => {
-          if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-            stream = null;
-            video.pause();
-            video.srcObject = null;
-          }
-          video.style.display = 'none';
-          openCameraBtn.disabled = false;
-          takePhotoBtn.disabled = true;
-          closeCameraBtn.disabled = true;
-          closeCameraBtn.style.display = 'none';
-          openCameraBtn.style.display = 'inline-block';
-          takePhotoBtn.style.display = 'none';
-        });
-
-        // --- Photo studio ---
-          const DEFAULT_OUTFITS = [
-          { id: 'dev', label: 'นักพัฒนาซอฟต์แวร์' },
-          { id: 'designer', label: 'กราฟิก/นักออกแบบ' },
-          { id: 'nurse', label: 'พยาบาล/บุคลากรทางการแพทย์' },
-          { id: 'doctor', label: 'แพทย์' },
-          { id: 'chef', label: 'เชฟ/กุ๊ก' },
-          { id: 'mechanic', label: 'ช่างซ่อมบำรุง' },
-          { id: 'engineer', label: 'วิศวกร' },
-          { id: 'scientist', label: 'นักวิทยาศาสตร์' },
-          { id: 'police', label: 'เจ้าหน้าที่ตำรวจ' },
-          { id: 'firefighter', label: 'นักดับเพลิง' },
-          { id: 'lawyer', label: 'ทนายความ' },
-          { id: 'teacher', label: 'ครู/อาจารย์' },
-          { id: 'sales', label: 'พนักงานขาย' },
-          { id: 'photographer', label: 'ช่างภาพ' },
-          { id: 'tourguide', label: 'มัคคุเทศก์' },
-          { id: 'farmer', label: 'เกษตรกร/ช่างเทคนิค' },
-          { id: 'manager', label: 'ผู้จัดการ/ธุรกิจ' },
-          { id: 'contentcreator', label: 'ครีเอเตอร์คอนเทนต์' },
-          { id: 'translator', label: 'นักแปลภาษา' },
-          { id: 'webmaster', label: 'ผู้ดูแลเว็บไซต์' },
-          { id: 'none', label: 'ไม่มี' }
-        ];
-
-        const overlayListDiv = document.querySelector('.overlay-list');
-        overlayListDiv.innerHTML = ''; // ล้างของเดิมก่อน
-
-        DEFAULT_OUTFITS.forEach(o => {
-          const btn = document.createElement('button');
-          btn.className = 'overlay-btn';
-          btn.dataset.overlay = o.id;
-          btn.textContent = o.label;
-          overlayListDiv.appendChild(btn);
-        });
-        const canvas = $('#canvas');const ctx = canvas.getContext('2d');let baseImg=null;let activeOverlay='none';
-        function drawCanvas(){
-          ctx.clearRect(0,0,canvas.width,canvas.height);
-          if(baseImg){
-            // fit image to canvas while preserving aspect
-            const ratio = Math.min(canvas.width/baseImg.width, canvas.height/baseImg.height);
-            const w = baseImg.width*ratio; const h = baseImg.height*ratio; const x=(canvas.width-w)/2; const y=(canvas.height-h)/2;
-            ctx.drawImage(baseImg,x,y,w,h);
-          } else {
-            ctx.fillStyle='#071022';ctx.fillRect(0,0,canvas.width,canvas.height);
-            ctx.fillStyle='#9aa4b2';ctx.font='14px sans-serif';ctx.fillText('อัปโหลดรูปเพื่อทดลองใส่ชุดอาชีพ',12,24);
-          }
-          drawOverlay();
-        }
-
-        function drawOverlay(){
-          if(activeOverlay === 'none') return;
-
-          const overlayImg = new Image();
-          overlayImg.crossOrigin = "anonymous";
-          overlayImg.src = `img/${activeOverlay}.png`;
-
-          overlayImg.onload = () => {
-            ctx.drawImage(overlayImg, 0, 0, canvas.width, canvas.height);
-          }
-        }
-
-        $('#photoInput').addEventListener('change',ev=>{
-          const f = ev.target.files[0]; if(!f) return; const url = URL.createObjectURL(f);
-          const img = new Image(); img.onload=()=>{ baseImg=img; drawCanvas(); URL.revokeObjectURL(url); }; img.src=url;
-        });
-
-        $$('.overlay-btn').forEach(b=>b.addEventListener('click',()=>{ activeOverlay = b.dataset.overlay; drawCanvas(); }));
-        $('#clearPhoto').addEventListener('click',()=>{ baseImg=null; activeOverlay='none'; $('#photoInput').value=''; drawCanvas(); });
-        $('#download').addEventListener('click',()=>{ const data = canvas.toDataURL('image/png'); const a=document.createElement('a'); a.href=data; a.download='career-vision.png'; a.click(); });
-
-        // draw initial canvas
-        drawCanvas();
-
-        // small helper: expose functions to console for editing careers quickly
-        window._careerAPI = {get:()=>careers,save:()=>saveCareers(careers),add:c=>{careers.unshift(c);saveCareers(careers);renderAllCareers()}};
-
-  </script>
 </body>
 </html>
