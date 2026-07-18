@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hybrid Marker Generator (Admin Tool)</title>
+
+<!-- Client-side QR matrix generator (pure JS, no server calls) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    max-width: 640px;
+    margin: 40px auto;
+    padding: 0 20px;
+    line-height: 1.5;
+  }
+  h1 { font-size: 1.4rem; }
+  .row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 14px 0;
+  }
+  input[type=text] {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 12px;
+    font-size: 15px;
+    border: 1px solid #999;
+    border-radius: 6px;
+  }
+  button {
+    padding: 10px 16px;
+    font-size: 15px;
+    border: none;
+    border-radius: 6px;
+    background: #222;
+    color: #fff;
+    cursor: pointer;
+  }
+  button:disabled { background: #999; cursor: not-allowed; }
+  button.secondary { background: #444; }
+  #canvasWrap {
+    border: 1px dashed #888;
+    display: inline-block;
+    padding: 8px;
+    margin-top: 10px;
+    background-color: #eee;
+  }
+  canvas { display: block; image-rendering: pixelated; }
+  #info { font-size: 13px; color: #666; margin-top: 10px; white-space: pre-wrap; }
+  #error { color: #b40000; font-weight: 600; min-height: 1.2em; }
+  code { background: rgba(127,127,127,0.15); padding: 1px 5px; border-radius: 4px; }
+  .hint { font-size: 12px; color: #888; margin: -8px 0 0 0; }
+</style>
+</head>
+<body>
+
+<h1>Hybrid Marker Generator</h1>
+<p>Generates a printable AR.js marker (white padding + black border + centered QR code)
+and its matching <code>.patt</code> tracking file, entirely in the browser.</p>
+
+<div class="row">
+  <input type="text" id="modelInput" placeholder="e.g. earth" autocomplete="off">
+  <button id="generateBtn">Generate</button>
+</div>
+
+<div id="error"></div>
+
+<div id="canvasWrap">
+  <canvas id="markerCanvas" width="512" height="512"></canvas>
+</div>
+
+<div class="row">
+  <div>
+    <button id="downloadPngBtn" class="secondary" disabled>Download .png</button>
+    <p class="hint">Save into your server's <code>/markers/</code> folder.</p>
+  </div>
+  <div>
+    <button id="downloadPattBtn" class="secondary" disabled>Download .patt</button>
+    <p class="hint">Save into your server's <code>/patterns/</code> folder.</p>
+  </div>
+</div>
+
+<div id="info"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ------------------------------------------------------------------
+  // Configuration
+  // ------------------------------------------------------------------
+  const BASE_URL = "http://110.164.204.242:13812/AR/V1/index.html?model=";
+  const TOTAL_PIXELS = 512;      // final PNG resolution (square)
+  const WHITE_MARGIN = 40;       // Layer 1: outer white padding, on all sides
+  const BORDER_RATIO = 0.25;     // Layer 2: black border thickness, as a fraction
+                                  //   of the square left after the outer margin
+  const QR_FILL_RATIO = 0.92;    // Layer 4: QR fills 92% of the Layer 3 inner square
+  const PATT_SIZE = 16;          // AR.js / ARToolKit standard pattern resolution
+  const MAX_NAME_LEN = 64;
+
+  // Server-side destination folders, used only for on-screen hints /
+  // informational text — this page never writes to them directly.
+  const MARKERS_DIR  = "markers/";
+  const PATTERNS_DIR = "patterns/";
+
+  const modelInput      = document.getElementById("modelInput");
+  const generateBtn     = document.getElementById("generateBtn");
+  const canvas          = document.getElementById("markerCanvas");
+  const ctx             = canvas.getContext("2d");
+  const errorEl         = document.getElementById("error");
+  const infoEl          = document.getElementById("info");
+  const downloadPngBtn  = document.getElementById("downloadPngBtn");
+  const downloadPattBtn = document.getElementById("downloadPattBtn");
+
+  let currentName = null;   // sanitized name for the last successful generation
+  let currentPatt = null;   // .patt text for the last successful generation
+
+  // ------------------------------------------------------------------
+  // Sanitization: only [a-z0-9_-] survives; traversal sequences and
+  // separators are stripped before the string is used in a URL or filename.
+  // ------------------------------------------------------------------
+  function sanitizeModelName(raw) {
+    if (raw == null) return "";
+    let s = String(raw);
+    if (typeof s.normalize === "function") {
+      s = s.normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
+    }
+    s = s.trim().toLowerCase();
+    s = s.replace(/\s+/g, "_");
+    s = s.replace(/\.\./g, "");
+    s = s.replace(/[\\/]/g, "");
+    s = s.replace(/[^a-z0-9_-]/g, "");
+    s = s.replace(/[_-]{2,}/g, "_");
+    s = s.replace(/^[_-]+|[_-]+$/g, "");
+    if (s.length > MAX_NAME_LEN) s = s.slice(0, MAX_NAME_LEN);
+    return s;
+  }
+
+  function setError(msg) {
+    errorEl.textContent = msg || "";
+  }
+
+  // ------------------------------------------------------------------
+  // Build the QR code as an offscreen canvas using qrcode.js.
+  // ------------------------------------------------------------------
+  function buildQrCanvas(text, sizePx) {
+    return new Promise((resolve, reject) => {
+      const host = document.createElement("div");
+      host.style.display = "none";
+      document.body.appendChild(host);
+
+      try {
+        new QRCode(host, {
+          text: text,
+          width: sizePx,
+          height: sizePx,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      } catch (e) {
+        document.body.removeChild(host);
+        reject(e);
+        return;
+      }
+
+      setTimeout(() => {
+        const qrCanvas = host.querySelector("canvas");
+        const qrImg = host.querySelector("img");
+
+        if (qrCanvas) {
+          document.body.removeChild(host);
+          resolve(qrCanvas);
+        } else if (qrImg) {
+          const off = document.createElement("canvas");
+          off.width = sizePx;
+          off.height = sizePx;
+          const offCtx = off.getContext("2d");
+          offCtx.imageSmoothingEnabled = false;
+          offCtx.drawImage(qrImg, 0, 0, sizePx, sizePx);
+          document.body.removeChild(host);
+          resolve(off);
+        } else {
+          document.body.removeChild(host);
+          reject(new Error("QR code library failed to render."));
+        }
+      }, 50);
+    });
+  }
+
+  // ------------------------------------------------------------------
+  // Draw order, strictly outside-in:
+  //   Layer 1 - Outer white margin  (entire canvas, WHITE_MARGIN px on
+  //             every side; this is what gives the printed marker
+  //             contrast against dark physical surfaces)
+  //   Layer 2 - Black AR.js border  (inset by WHITE_MARGIN)
+  //   Layer 3 - White inner pattern area (inset further by the border
+  //             thickness — this square is what AR.js will optically
+  //             train/track)
+  //   Layer 4 - QR code, centered inside Layer 3 at 92% fill
+  //
+  // Returns the exact pixel rectangle of Layer 3 (patternX, patternY,
+  // innerSize) so extractPattern() can crop precisely that area and
+  // nothing else.
+  // ------------------------------------------------------------------
+  async function drawMarker(sanitizedName) {
+    // Layer 1: outer white margin — fill the whole canvas white first.
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, TOTAL_PIXELS, TOTAL_PIXELS);
+
+    // The square that remains once the outer margin is excluded.
+    const markerSize = TOTAL_PIXELS - WHITE_MARGIN * 2;
+    const borderThickness = Math.round(markerSize * BORDER_RATIO);
+
+    // Layer 2: black AR.js border, inset by the outer margin.
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(WHITE_MARGIN, WHITE_MARGIN, markerSize, markerSize);
+
+    // Layer 3: white inner pattern area, inset further by the border.
+    const patternX = WHITE_MARGIN + borderThickness;
+    const patternY = WHITE_MARGIN + borderThickness;
+    const innerSize = markerSize - borderThickness * 2;
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(patternX, patternY, innerSize, innerSize);
+
+    // Layer 4: QR code, centered inside Layer 3.
+    const url = BASE_URL + sanitizedName;
+    const qrBox = Math.round(innerSize * QR_FILL_RATIO);
+    const qrCanvas = await buildQrCanvas(url, qrBox);
+
+    const qrOffset = patternX + Math.round((innerSize - qrBox) / 2);
+    ctx.imageSmoothingEnabled = false; // keep QR modules crisp, no blur
+    ctx.drawImage(qrCanvas, qrOffset, qrOffset, qrBox, qrBox);
+
+    // Hand back the exact Layer-3 rectangle — this, and only this, is
+    // what gets fed into the .patt extraction below.
+    return { patternX, patternY, innerSize, url };
+  }
+
+  // ------------------------------------------------------------------
+  // .patt generation — CRITICAL: only Layer 3 + Layer 4 (the white
+  // inner square + QR code) may be sampled. The outer white margin
+  // and the black border must be excluded entirely, or AR.js training
+  // will bake the border into the pattern and tracking will fail.
+  //
+  // patternX / patternY / innerSize come directly from drawMarker(),
+  // so there is no re-derivation or duplicated math that could drift
+  // out of sync with what was actually drawn.
+  // ------------------------------------------------------------------
+  function extractPattern(patternX, patternY, innerSize) {
+    const small = document.createElement("canvas");
+    small.width = PATT_SIZE;
+    small.height = PATT_SIZE;
+    const smallCtx = small.getContext("2d");
+    smallCtx.imageSmoothingEnabled = true;
+    smallCtx.imageSmoothingQuality = "high";
+
+    // Downscale strictly from the Layer 3 rectangle — the outer
+    // margin and black border sit outside this source rect and are
+    // never touched.
+    smallCtx.drawImage(
+      canvas,
+      patternX, patternY, innerSize, innerSize,  // source: Layer 3 + 4 only
+      0, 0, PATT_SIZE, PATT_SIZE                  // dest: 16x16
+    );
+
+    const imgData = smallCtx.getImageData(0, 0, PATT_SIZE, PATT_SIZE).data;
+
+    const channels = [ [], [], [] ]; // R, G, B
+    for (let c = 0; c < 3; c++) {
+      for (let row = 0; row < PATT_SIZE; row++) {
+        channels[c].push(new Array(PATT_SIZE).fill(0));
+      }
+    }
+    for (let row = 0; row < PATT_SIZE; row++) {
+      for (let col = 0; col < PATT_SIZE; col++) {
+        const idx = (row * PATT_SIZE + col) * 4;
+        channels[0][row][col] = imgData[idx];     // R
+        channels[1][row][col] = imgData[idx + 1]; // G
+        channels[2][row][col] = imgData[idx + 2]; // B
+      }
+    }
+    return channels; // [Rmatrix, Gmatrix, Bmatrix], each 16x16
+  }
+
+  function rotate90CW(matrix) {
+    const n = matrix.length;
+    const result = [];
+    for (let i = 0; i < n; i++) result.push(new Array(n));
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        result[j][n - 1 - i] = matrix[i][j];
+      }
+    }
+    return result;
+  }
+
+  function buildPattText(channels) {
+    let current = channels;
+    const lines = [];
+
+    for (let rotation = 0; rotation < 4; rotation++) {
+      for (let c = 0; c < 3; c++) { // R, G, B blocks
+        for (let row = 0; row < PATT_SIZE; row++) {
+          lines.push(current[c][row].join(" "));
+        }
+      }
+      current = [
+        rotate90CW(current[0]),
+        rotate90CW(current[1]),
+        rotate90CW(current[2])
+      ];
+    }
+
+    return lines.join("\n") + "\n";
+  }
+
+  // ------------------------------------------------------------------
+  // Download helpers. Uses the File System Access API (showSaveFilePicker)
+  // when available, so re-generating and re-saving the same model name
+  // overwrites the existing file instead of producing "(1).png" copies.
+  // Falls back to a plain Blob-URL download link otherwise.
+  // ------------------------------------------------------------------
+  async function smartDownload(filename, blob, description) {
+    if (window.showSaveFilePicker) {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: filename,
+          types: [{
+            description: description,
+            accept: filename.endsWith(".png")
+              ? { "image/png": [".png"] }
+              : { "text/plain": [".patt"] }
+          }]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        return;
+      } catch (err) {
+        if (err.name === "AbortError") return; // user cancelled — do nothing
+        // Any other error: fall through to the plain download below.
+      }
+    }
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+
+  async function downloadPng() {
+    if (!currentName) return;
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+    if (blob) await smartDownload(`${currentName}.png`, blob, "PNG Image (place in /markers/)");
+  }
+
+  async function downloadPatt() {
+    if (!currentName || currentPatt == null) return;
+    const blob = new Blob([currentPatt], { type: "text/plain" });
+    await smartDownload(`${currentName}.patt`, blob, "AR.js Pattern File (place in /patterns/)");
+  }
+
+  // ------------------------------------------------------------------
+  // Main "Generate" handler
+  // ------------------------------------------------------------------
+  async function handleGenerate() {
+    setError("");
+    infoEl.textContent = "";
+    downloadPngBtn.disabled = true;
+    downloadPattBtn.disabled = true;
+    currentName = null;
+    currentPatt = null;
+
+    const rawInput = modelInput.value;
+    const sanitized = sanitizeModelName(rawInput);
+
+    if (!sanitized) {
+      setError("Please enter a valid model name (letters, numbers, - and _ only).");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      return;
+    }
+
+    generateBtn.disabled = true;
+    generateBtn.textContent = "Generating…";
+
+    try {
+      const { patternX, patternY, innerSize, url } = await drawMarker(sanitized);
+      const channels = extractPattern(patternX, patternY, innerSize);
+      const pattText = buildPattText(channels);
+
+      currentName = sanitized;
+      currentPatt = pattText;
+
+      downloadPngBtn.disabled = false;
+      downloadPattBtn.disabled = false;
+
+      infoEl.textContent =
+        `Model name (sanitized): ${sanitized}\n` +
+        `Encoded URL: ${url}\n` +
+        `Canvas: ${TOTAL_PIXELS}x${TOTAL_PIXELS}px (${WHITE_MARGIN}px outer margin)\n` +
+        `Pattern source: ${innerSize}x${innerSize}px @ (${patternX}, ${patternY}) -> downscaled to ${PATT_SIZE}x${PATT_SIZE}\n` +
+        `On your server: ${MARKERS_DIR}${sanitized}.png  +  ${PATTERNS_DIR}${sanitized}.patt`;
+    } catch (e) {
+      setError("Generation failed: " + e.message);
+    } finally {
+      generateBtn.disabled = false;
+      generateBtn.textContent = "Generate";
+    }
+  }
+
+  generateBtn.addEventListener("click", handleGenerate);
+  downloadPngBtn.addEventListener("click", downloadPng);
+  downloadPattBtn.addEventListener("click", downloadPatt);
+  modelInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") handleGenerate();
+  });
+})();
+</script>
+</body>
+</html>
