@@ -55,7 +55,6 @@
   #info { font-size: 13px; color: #666; margin-top: 10px; white-space: pre-wrap; }
   #error { color: #b40000; font-weight: 600; min-height: 1.2em; }
   code { background: rgba(127,127,127,0.15); padding: 1px 5px; border-radius: 4px; }
-  .hint { font-size: 12px; color: #888; margin: -8px 0 0 0; }
 </style>
 </head>
 <body>
@@ -76,14 +75,8 @@ and its matching <code>.patt</code> tracking file, entirely in the browser.</p>
 </div>
 
 <div class="row">
-  <div>
-    <button id="downloadPngBtn" class="secondary" disabled>Download .png</button>
-    <p class="hint">Save into your server's <code>/markers/</code> folder.</p>
-  </div>
-  <div>
-    <button id="downloadPattBtn" class="secondary" disabled>Download .patt</button>
-    <p class="hint">Save into your server's <code>/patterns/</code> folder.</p>
-  </div>
+  <button id="downloadPngBtn" class="secondary" disabled>Download .png</button>
+  <button id="downloadPattBtn" class="secondary" disabled>Download .patt</button>
 </div>
 
 <div id="info"></div>
@@ -95,7 +88,7 @@ and its matching <code>.patt</code> tracking file, entirely in the browser.</p>
   // ------------------------------------------------------------------
   // Configuration
   // ------------------------------------------------------------------
-  const BASE_URL = "http://110.164.204.242:13812/AR/V1/index.html?model=";
+  const BASE_URL = "https://book549.github.io/AR/V1/index.html?model=";
   const TOTAL_PIXELS = 512;      // final PNG resolution (square)
   const WHITE_MARGIN = 40;       // Layer 1: outer white padding, on all sides
   const BORDER_RATIO = 0.25;     // Layer 2: black border thickness, as a fraction
@@ -103,11 +96,6 @@ and its matching <code>.patt</code> tracking file, entirely in the browser.</p>
   const QR_FILL_RATIO = 0.92;    // Layer 4: QR fills 92% of the Layer 3 inner square
   const PATT_SIZE = 16;          // AR.js / ARToolKit standard pattern resolution
   const MAX_NAME_LEN = 64;
-
-  // Server-side destination folders, used only for on-screen hints /
-  // informational text — this page never writes to them directly.
-  const MARKERS_DIR  = "markers/";
-  const PATTERNS_DIR = "patterns/";
 
   const modelInput      = document.getElementById("modelInput");
   const generateBtn     = document.getElementById("generateBtn");
@@ -410,8 +398,7 @@ and its matching <code>.patt</code> tracking file, entirely in the browser.</p>
         `Model name (sanitized): ${sanitized}\n` +
         `Encoded URL: ${url}\n` +
         `Canvas: ${TOTAL_PIXELS}x${TOTAL_PIXELS}px (${WHITE_MARGIN}px outer margin)\n` +
-        `Pattern source: ${innerSize}x${innerSize}px @ (${patternX}, ${patternY}) -> downscaled to ${PATT_SIZE}x${PATT_SIZE}\n` +
-        `On your server: ${MARKERS_DIR}${sanitized}.png  +  ${PATTERNS_DIR}${sanitized}.patt`;
+        `Pattern source: ${innerSize}x${innerSize}px @ (${patternX}, ${patternY}) -> downscaled to ${PATT_SIZE}x${PATT_SIZE}`;
     } catch (e) {
       setError("Generation failed: " + e.message);
     } finally {
