@@ -187,6 +187,16 @@
       }
 
       // ------------------------------------------------------------------
+      // Optional ?debug=1 — turns on AR.js's built-in debug UI (shows the
+      // thresholded/binarized camera feed and pattern-match confidence),
+      // useful for diagnosing why a marker isn't being detected.
+      // ------------------------------------------------------------------
+      if (params.get("debug") === "1") {
+        const sceneEl = document.querySelector("a-scene");
+        sceneEl.setAttribute("arjs", "sourceType: webcam; debugUIEnabled: true;");
+      }
+
+      // ------------------------------------------------------------------
       // Build safe, fixed-shape resource paths. Because modelName is
       // restricted to [a-z0-9_-], path traversal / injection is not
       // possible here even though we're doing plain string concatenation.
