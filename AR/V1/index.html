@@ -25,37 +25,48 @@
     }
     #status.error { background: rgba(180, 0, 0, 0.85); }
 
-    #pattern-indicator {
+    #indicator-panel {
       position: fixed;
       left: 10px;
       bottom: 10px;
       z-index: 999;
-      padding: 6px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 8px 10px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 6px;
+    }
+    .indicator-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
       font-family: system-ui, sans-serif;
       font-size: 12px;
       font-weight: 600;
       color: #fff;
-      background: rgba(0, 0, 0, 0.6);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      white-space: nowrap;
     }
-    #pattern-indicator .dot {
+    .indicator-row .dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #888; /* checking */
+      background: #888; /* checking / not yet known */
       flex-shrink: 0;
     }
-    #pattern-indicator.ok .dot { background: #2ecc40; }
-    #pattern-indicator.error .dot { background: #ff4136; }
+    .indicator-row.ok .dot { background: #2ecc40; }
+    .indicator-row.error .dot { background: #ff4136; }
   </style>
 </head>
 <body>
 
   <div id="status">Loading model…</div>
-  <div id="pattern-indicator"><span class="dot"></span><span id="pattern-indicator-text">Pattern: checking…</span></div>
+  <div id="indicator-panel">
+    <div class="indicator-row" id="ind-model"><span class="dot"></span><span class="label">Model: checking…</span></div>
+    <div class="indicator-row" id="ind-texture"><span class="dot"></span><span class="label">Texture: checking…</span></div>
+    <div class="indicator-row" id="ind-pattern"><span class="dot"></span><span class="label">Pattern: checking…</span></div>
+    <div class="indicator-row" id="ind-detection"><span class="dot"></span><span class="label">Detection: searching…</span></div>
+  </div>
 
   <a-scene vr-mode-ui="enabled: false" xr-mode-ui="enabled: false"
     embedded
@@ -106,21 +117,30 @@
       const MAX_NAME_LEN = 64;
 
       const statusEl = document.getElementById("status");
-      const patternIndicatorEl = document.getElementById("pattern-indicator");
-      const patternIndicatorTextEl = document.getElementById("pattern-indicator-text");
 
       function setStatus(msg, isError) {
         statusEl.textContent = msg;
         statusEl.classList.toggle("error", !!isError);
       }
 
-      function setPatternIndicator(msg, state) {
-        // state: "checking" | "ok" | "error"
-        patternIndicatorTextEl.textContent = msg;
-        patternIndicatorEl.classList.remove("ok", "error");
+      // Drives one row of the bottom-left indicator panel.
+      // rowId: "ind-model" | "ind-texture" | "ind-pattern" | "ind-detection"
+      // state: "checking" | "ok" | "error"
+      function setIndicator(rowId, msg, state) {
+        const row = document.getElementById(rowId);
+        if (!row) return;
+        row.querySelector(".label").textContent = msg;
+        row.classList.remove("ok", "error");
         if (state === "ok" || state === "error") {
-          patternIndicatorEl.classList.add(state);
+          row.classList.add(state);
         }
+      }
+
+      // Generic reachability probe used by the model/texture/pattern checks.
+      function checkReachable(url) {
+        return fetch(url, { method: "GET", cache: "no-store" })
+          .then((res) => ({ ok: res.ok, status: res.status }))
+          .catch(() => ({ ok: false, status: null }));
       }
 
       // ------------------------------------------------------------------
@@ -205,18 +225,57 @@
       // fails silently if this 404s (no markerFound event ever fires, with
       // no on-screen error), so this check exists purely to surface that
       // failure mode via the bottom-left indicator.
-      setPatternIndicator("Pattern: checking…", "checking");
-      fetch(pattUrl, { method: "GET", cache: "no-store" })
-        .then((res) => {
-          if (res.ok) {
-            setPatternIndicator("Pattern: OK", "ok");
-          } else {
-            setPatternIndicator(`Pattern: ${res.status} not found`, "error");
-          }
-        })
-        .catch(() => {
-          setPatternIndicator("Pattern: fetch failed", "error");
-        });
+      checkReachable(pattUrl).then(({ ok, status }) => {
+        if (ok) {
+          setIndicator("ind-pattern", "Pattern: OK", "ok");
+        } else {
+          setIndicator("ind-pattern", `Pattern: ${status ?? "fetch failed"}`, "error");
+        }
+      });
+
+      // Same idea for the .obj — confirms it's reachable independently of
+      // whatever three.js's OBJLoader ends up reporting.
+      checkReachable(objUrl).then(({ ok, status }) => {
+        if (ok) {
+          setIndicator("ind-model", "Model: OK", "ok");
+        } else {
+          setIndicator("ind-model", `Model: ${status ?? "fetch failed"}`, "error");
+        }
+      });
+
+      // Texture check: nothing in this page fetches textures directly (the
+      // .mtl's map_Kd line does, indirectly, inside three.js's MTLLoader).
+      // So to surface a broken/missing texture, fetch the .mtl as text,
+      // pull out the map_Kd path, resolve it the same way a browser would
+      // relative to the .mtl's own URL, then probe that resolved URL.
+      checkReachable(mtlUrl).then(({ ok: mtlOk, status: mtlStatus }) => {
+        if (!mtlOk) {
+          setIndicator("ind-texture", `Texture: .mtl ${mtlStatus ?? "fetch failed"}`, "error");
+          return;
+        }
+        fetch(mtlUrl, { cache: "no-store" })
+          .then((res) => res.text())
+          .then((mtlText) => {
+            const match = mtlText.match(/^\s*map_Kd\s+(.+?)\s*$/mi);
+            if (!match) {
+              setIndicator("ind-texture", "Texture: no map_Kd in .mtl", "error");
+              return;
+            }
+            const texPath = match[1];
+            const mtlAbsUrl = new URL(mtlUrl, window.location.href);
+            const texAbsUrl = new URL(texPath, mtlAbsUrl);
+            checkReachable(texAbsUrl.href).then(({ ok, status }) => {
+              if (ok) {
+                setIndicator("ind-texture", "Texture: OK", "ok");
+              } else {
+                setIndicator("ind-texture", `Texture: ${status ?? "fetch failed"}`, "error");
+              }
+            });
+          })
+          .catch(() => {
+            setIndicator("ind-texture", "Texture: .mtl parse failed", "error");
+          });
+      });
 
       // Attach the obj-model component once assets are ready
       const modelEl = document.getElementById("ar-model");
@@ -239,17 +298,23 @@
           attachModel();
         }
         setStatus(`Model "${modelName}" ready — point camera at the marker.`);
+        // Authoritative confirmation the .obj actually parsed, overriding
+        // the earlier reachability-only check.
+        setIndicator("ind-model", "Model: OK", "ok");
       });
 
       modelEl.addEventListener("model-error", () => {
         setStatus(`Failed to load model: ${modelName}`, true);
+        setIndicator("ind-model", "Model: load failed", "error");
       });
 
       markerEl.addEventListener("markerFound", () => {
         setStatus(`Tracking marker for "${modelName}"`);
+        setIndicator("ind-detection", "Detection: tracking", "ok");
       });
       markerEl.addEventListener("markerLost", () => {
         setStatus(`Point camera at the "${modelName}" marker`);
+        setIndicator("ind-detection", "Detection: searching…", "checking");
       });
     })();
   </script>
