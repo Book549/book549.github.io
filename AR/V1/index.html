@@ -8,6 +8,7 @@
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
+
   <style>
     html, body { margin: 0; height: 100%; overflow: hidden; }
 
@@ -23,14 +24,40 @@
       text-align: center;
     }
     #status.error { background: rgba(180, 0, 0, 0.85); }
+
+    #pattern-indicator {
+      position: fixed;
+      left: 10px;
+      bottom: 10px;
+      z-index: 999;
+      padding: 6px 10px;
+      font-family: system-ui, sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    #pattern-indicator .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #888; /* checking */
+      flex-shrink: 0;
+    }
+    #pattern-indicator.ok .dot { background: #2ecc40; }
+    #pattern-indicator.error .dot { background: #ff4136; }
   </style>
 </head>
 <body>
 
   <div id="status">Loading model…</div>
+  <div id="pattern-indicator"><span class="dot"></span><span id="pattern-indicator-text">Pattern: checking…</span></div>
 
-  <a-scene
-    vr-mode-ui="enabled: false"
+  <a-scene vr-mode-ui="enabled: false" xr-mode-ui="enabled: false"
     embedded
     arjs="sourceType: webcam; debugUIEnabled: false;"
   >
@@ -79,10 +106,21 @@
       const MAX_NAME_LEN = 64;
 
       const statusEl = document.getElementById("status");
+      const patternIndicatorEl = document.getElementById("pattern-indicator");
+      const patternIndicatorTextEl = document.getElementById("pattern-indicator-text");
 
       function setStatus(msg, isError) {
         statusEl.textContent = msg;
         statusEl.classList.toggle("error", !!isError);
+      }
+
+      function setPatternIndicator(msg, state) {
+        // state: "checking" | "ok" | "error"
+        patternIndicatorTextEl.textContent = msg;
+        patternIndicatorEl.classList.remove("ok", "error");
+        if (state === "ok" || state === "error") {
+          patternIndicatorEl.classList.add(state);
+        }
       }
 
       // ------------------------------------------------------------------
@@ -162,6 +200,23 @@
       // Point the marker at the matching, mathematically-generated .patt
       const markerEl = document.getElementById("ar-marker");
       markerEl.setAttribute("url", pattUrl);
+
+      // Independently verify the .patt file is actually reachable. AR.js
+      // fails silently if this 404s (no markerFound event ever fires, with
+      // no on-screen error), so this check exists purely to surface that
+      // failure mode via the bottom-left indicator.
+      setPatternIndicator("Pattern: checking…", "checking");
+      fetch(pattUrl, { method: "GET", cache: "no-store" })
+        .then((res) => {
+          if (res.ok) {
+            setPatternIndicator("Pattern: OK", "ok");
+          } else {
+            setPatternIndicator(`Pattern: ${res.status} not found`, "error");
+          }
+        })
+        .catch(() => {
+          setPatternIndicator("Pattern: fetch failed", "error");
+        });
 
       // Attach the obj-model component once assets are ready
       const modelEl = document.getElementById("ar-model");
